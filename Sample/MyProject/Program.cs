@@ -17,6 +17,27 @@ namespace MyProject
             // and the network on which this address should be used.
             Console.WriteLine(publicKey.GetAddress(Network.Main));
             Console.WriteLine(publicKey.GetAddress(Network.TestNet));
+
+            /*  var publicKeyHash = publicKey.Hash;
+            Console.WriteLine(publicKeyHash);
+            var mainNetAddress = publicKeyHash.GetAddress(Network.Main);
+            var testNetAddress = publicKeyHash.GetAddress(Network.TestNet);
+            Console.WriteLine(mainNetAddress);
+            Console.WriteLine(testNetAddress); */
+
+            var publicKeyHash = new KeyId("14836dbe7f38c5ac3d49e8d790af808a4ee9edcf");
+            var testNetAddress = publicKeyHash.GetAddress(Network.TestNet);
+            var mainNetAddress = publicKeyHash.GetAddress(Network.Main);
+            Console.WriteLine(mainNetAddress.ScriptPubKey);
+            Console.WriteLine(testNetAddress.ScriptPubKey);
+            var paymentScript = publicKeyHash.ScriptPubKey;
+            var sameMainNetAddress = paymentScript.GetDestinationAddress(Network.Main);
+            Console.WriteLine(mainNetAddress == sameMainNetAddress);
+            
+            var samePublicKeyHash = (KeyId)paymentScript.GetDestination();
+            Console.WriteLine(publicKeyHash == samePublicKeyHash); // True
+            var sameMainNetAddress2 = new BitcoinPubKeyAddress(samePublicKeyHash, Network.Main);
+            Console.WriteLine(mainNetAddress == sameMainNetAddress2); //
         }
     }
 }
