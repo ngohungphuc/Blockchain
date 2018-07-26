@@ -9,7 +9,7 @@ namespace MyProject
         {
             Console.WriteLine("Hello World! " + new Key().GetWif(Network.Main));
             // generate a random private key
-            Key privateKey = new Key();
+            //Key privateKey = new Key();
             //From the private key, we use a one-way cryptographic function, to generate a public key.
             PubKey publicKey = privateKey.PubKey;
             Console.WriteLine(publicKey);
@@ -33,11 +33,28 @@ namespace MyProject
             var paymentScript = publicKeyHash.ScriptPubKey;
             var sameMainNetAddress = paymentScript.GetDestinationAddress(Network.Main);
             Console.WriteLine(mainNetAddress == sameMainNetAddress);
-            
+
             var samePublicKeyHash = (KeyId)paymentScript.GetDestination();
             Console.WriteLine(publicKeyHash == samePublicKeyHash); // True
             var sameMainNetAddress2 = new BitcoinPubKeyAddress(samePublicKeyHash, Network.Main);
             Console.WriteLine(mainNetAddress == sameMainNetAddress2); //
+
+            Key privateKey = new Key(); // generate a random private key
+            // generate our Bitcoin secret(also known as Wallet Import Format or simply WIF) from our private key for the mainnet
+            BitcoinSecret mainNetPrivateKey = privateKey.GetBitcoinSecret(Network.Main);
+            BitcoinSecret testNetPrivateKey = privateKey.GetBitcoinSecret(Network.TestNet); // generate our Bitcoin secret(also known as Wallet Import Format or simply WIF) from our private key for the testnet
+            Console.WriteLine(mainNetPrivateKey);
+            Console.WriteLine(testNetPrivateKey);
+            bool WifIsBitcoinSecret = mainNetPrivateKey == privateKey.GetWif(Network.Main);
+            Console.WriteLine(WifIsBitcoinSecret); // True
+
+
+            // Create a client
+            QBitNinjaClient client = new QBitNinjaClient(Network.Main);
+            // Parse transaction id to NBitcoin.uint256 so the client can eat it
+            var transactionId = uint256.Parse("f13dc48fb035bbf0a6e989a26b3ecb57b84f85e0836e777d6edf60d87a4a2d94");
+            // Query the transaction
+            GetTransactionResponse transactionResponse = client.GetTransaction(transactionId).Result;
         }
     }
 }
